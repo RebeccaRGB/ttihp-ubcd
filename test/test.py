@@ -11,7 +11,7 @@ async def test_project(dut):
     dut._log.info("Start")
 
     # Set the clock period to 10 us (100 KHz)
-    clock = Clock(dut.clk, 10, units="us")
+    clock = Clock(dut.clk, 10, unit="us")
     cocotb.start_soon(clock.start())
 
     # Reset
@@ -29,7 +29,7 @@ async def test_project(dut):
         dut.uio_in.value = extras | (lt << 3) | (bi << 4) | (al << 5)
         dut.ui_in.value = value | (version << 4) | (rbi << 7)
         await ClockCycles(dut.clk, 1)
-        assert dut.uo_out.value == data | (rbo << 7)
+        assert dut.uo_out.value.to_unsigned() == data | (rbo << 7)
 
     # BCD RCA/blanking version
     await test_ubcd(1, 1, 1, 1, 0, 0, 15, 0x00, 1)
@@ -209,7 +209,7 @@ async def test_project(dut):
         dut.uio_in.value = extras | (fs << 3) | (bi << 4) | (al << 5) | (1 << 6)
         dut.ui_in.value = value | (lc << 7)
         await ClockCycles(dut.clk, 1)
-        assert dut.uo_out.value == data | (ltr << 7)
+        assert dut.uo_out.value.to_unsigned() == data | (ltr << 7)
 
     # ASCII font 0
     await test_ascii(1, 1, 1, 0, 7, 0x20, 0x00, 1)
@@ -613,8 +613,8 @@ async def test_project(dut):
         dut.uio_in.value = (lt1 << 2) | (lt2 << 3) | (bi << 4) | (al << 5) | (1 << 7)
         dut.ui_in.value = value1 | (value2 << 4)
         await ClockCycles(dut.clk, 1)
-        assert dut.uio_out.value == y1 | (y2 << 1)
-        assert dut.uo_out.value == u1 | (u2 << 1) | (v1 << 2) | (v2 << 3) | (w1 << 4) | (w2 << 5) | (x1 << 6) | (x2 << 7)
+        assert dut.uio_out.value.to_unsigned() == y1 | (y2 << 1)
+        assert dut.uo_out.value.to_unsigned() == u1 | (u2 << 1) | (v1 << 2) | (v2 << 3) | (w1 << 4) | (w2 << 5) | (x1 << 6) | (x2 << 7)
 
     # Cistercian
     await test_cistercian(1, 1, 1, 1,  0, 15, 0,0,0,0,0, 0,1,1,1,1)
@@ -645,8 +645,8 @@ async def test_project(dut):
         dut.uio_in.value = (lt << 3) | (bi << 4) | (al << 5) | (3 << 6)
         dut.ui_in.value = value | (vbi << 6) | (rbi << 7)
         await ClockCycles(dut.clk, 1)
-        assert dut.uio_out.value == (data >> 7) | (v << 1)
-        assert dut.uo_out.value == (data & 0x7F) | (rbo << 7)
+        assert dut.uio_out.value.to_unsigned() == (data >> 7) | (v << 1)
+        assert dut.uo_out.value.to_unsigned() == (data & 0x7F) | (rbo << 7)
 
     # Kaktovik
     await test_kaktovik(1, 1, 1, 1, 1,  0, 0b00000100, 1, 0)
